@@ -6,12 +6,11 @@ import { pluginPermissions } from '../permissions';
 import { Main } from '@strapi/design-system';
 import { Header } from '../components/Header.jsx';
 import Preferences from '../components/Preferences/Preferences.jsx';
-import About from '../components/About/About.jsx';
 
 const HomePage = () => {
   return (
     <>
-    {/* mango */}
+      {/* mango */}
       <Main>
         <Box padding={6} paddingTop={3}>
           <Header />
@@ -19,9 +18,7 @@ const HomePage = () => {
             <Box padding={6} paddingTop={3} paddingBottom={0}>
               <Preferences />
             </Box>
-            <Box padding={6} paddingTop={3} paddingBottom={0}>
-              <About />
-            </Box>
+            <Box padding={6} paddingTop={3} paddingBottom={0}></Box>
           </Page.Protect>
         </Box>
       </Main>

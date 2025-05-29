@@ -1,16 +1,17 @@
-import { Modal, Button, Typography, Flex, Grid, Loader, SingleSelect, SingleSelectOption, Checkbox } from '@strapi/design-system';
+import { useFetchClient } from '@strapi/admin/strapi-admin';
+import { Button, Checkbox, Flex, Loader, Modal, Typography } from '@strapi/design-system';
 import { Download } from '@strapi/icons'; // Add this import for the Download icon
 import pick from 'lodash/pick';
 import qs from 'qs';
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useFetchClient } from '@strapi/admin/strapi-admin';
-import { PLUGIN_ID } from '../../pluginId';
 import { useAlerts } from '../../hooks/useAlerts';
+import { useCurrentLocale } from '../../hooks/useCurrentLocale';
 import { useDownloadFile } from '../../hooks/useDownloadFile';
 import { useI18n } from '../../hooks/useI18n';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useSlug } from '../../hooks/useSlug';
+import { PLUGIN_ID } from '../../pluginId';
 import { dataFormatConfigs, dataFormats } from '../../utils/dataFormats';
 import { handleRequestErr } from '../../utils/error';
 import { Editor } from '../Editor';
@@ -28,6 +29,7 @@ export const ExportModal = ({ unavailableOptions = [], onClose }) => {
   const { search } = useLocation();
   const { downloadFile, withTimestamp } = useDownloadFile();
   const { slug, isSlugWholeDb } = useSlug();
+  const { currentLocale, hasLocale } = useCurrentLocale();
   const { notify } = useAlerts();
   const { getPreferences } = useLocalStorage();
   const { post } = useFetchClient();
@@ -46,16 +48,25 @@ export const ExportModal = ({ unavailableOptions = [], onClose }) => {
   const getData = async () => {
     setFetchingData(true);
     try {
+      // Prepare request data
+      const requestData = {
+        slug,
+        search: qs.stringify(pick(qs.parse(search), ['filters', 'sort'])),
+        applySearch: options.applyFilters,
+        exportFormat: options.exportFormat,
+        relationsAsId: options.relationsAsId,
+        deepness: 2,
+        exportPluginsContentTypes: options.exportPluginsContentTypes,
+      };
+
+      // Add locale parameter if available (for i18n content)
+      if (hasLocale && currentLocale) {
+        requestData.locale = currentLocale;
+        console.log('🌐 Adding locale to export request:', currentLocale);
+      }
+
       const res = await post(`/${PLUGIN_ID}/export/contentTypes`, {
-        data:{
-          slug,
-          search: qs.stringify(pick(qs.parse(search), ['filters', 'sort'])),
-          applySearch: options.applyFilters,
-          exportFormat: options.exportFormat,
-          relationsAsId: options.relationsAsId,
-          deepness: 2,
-          exportPluginsContentTypes: options.exportPluginsContentTypes,
-        }
+        data: requestData
       });
       setData(res.data);
     } catch (err) {
@@ -76,8 +87,8 @@ export const ExportModal = ({ unavailableOptions = [], onClose }) => {
     }
 
     let dataToCopy = data;
-    if(typeof data === 'object'){
-      dataToCopy =data?.data
+    if (typeof data === 'object') {
+      dataToCopy = data?.data
     }
 
     const { fileExt, fileContentType } = config;
@@ -87,8 +98,8 @@ export const ExportModal = ({ unavailableOptions = [], onClose }) => {
 
   const copyToClipboard = () => {
     let dataToCopy = data;
-    if(typeof data === 'object'){
-      dataToCopy =data?.data
+    if (typeof data === 'object') {
+      dataToCopy = data?.data
     }
     navigator.clipboard.writeText(dataToCopy);
     notify(i18n('plugin.export.copied'), '', 'success');

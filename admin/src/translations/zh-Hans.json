@@ -50,7 +50,7 @@
   "export.options": "选项",
   "export.plugins-content-types": "导出插件内容类型",
   "export.relations-as-id": "将关联关系导出为 ID",
-  "export.apply-filters-and-sort": "对导出数据应用过滤器和排序",
+  "export.apply-filters-and-sort": "对导出数据应用筛选器和排序",
   "export.deepness": "深度",
   "export.whole-database": "整个数据库"
 }

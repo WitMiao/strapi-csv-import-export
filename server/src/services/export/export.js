@@ -24,16 +24,25 @@ const dataConverterConfigs = {
  * @param {boolean} options.applySearch
  * @param {boolean} options.relationsAsId
  * @param {number} options.deepness
+ * @param {string} options.locale - Optional locale filter for i18n content
  * @returns {Promise<string>}
  */
-const exportData = async ({ slug, search, applySearch, exportFormat, relationsAsId, deepness = 5 }) => {
+const exportData = async ({ slug, search, applySearch, exportFormat, relationsAsId, deepness = 5, locale }) => {
   const slugToProcess = CustomSlugToSlug[slug] || slug;
   const queryBuilder = new ObjectBuilder();
-  
+
   queryBuilder.extend(getPopulateFromSchema(slugToProcess, deepness));
   if (applySearch) {
     queryBuilder.extend(buildFilterQuery(search));
   }
+
+  // Add locale filter for i18n content
+  if (locale) {
+    queryBuilder.extend({
+      locale: locale
+    });
+  }
+
   const query = queryBuilder.get();
 
   const entries = await strapi.documents(slugToProcess).findMany(query);
@@ -136,7 +145,6 @@ const getModelPopulationAttributes = (model) => {
 };
 
 export {
-  dataFormats as formats,
-  exportData,
-  getPopulateFromSchema,
+  exportData, dataFormats as formats, getPopulateFromSchema
 };
+

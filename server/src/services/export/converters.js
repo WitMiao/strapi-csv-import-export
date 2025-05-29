@@ -1,14 +1,14 @@
+import { json2csv } from 'json-2-csv';
 import { isArraySafe, toArray } from '../../../libs/arrays.js';
 import { isObjectSafe } from '../../../libs/objects.js';
 import { CustomSlugToSlug, CustomSlugs } from '../../config/constants.js';
 import { getConfig } from '../../utils/getConfig.js';
-import { getModelAttributes, getModel } from '../../utils/models.js';
-import { json2csv } from 'json-2-csv';
+import { getModel, getModelAttributes } from '../../utils/models.js';
 
 const convertToCsv = (entries, options) => {
   entries = toArray(entries);
   const content = json2csv(entries, {
-    excludeKeys: [/.*password.*/gmi, /.*token.*/gmi, /.*plubished.*/gmi, /.*documentId.*/gmi, /.*provider.*/gmi, /.*locale.*/gmi, /.*updatedBy.*/gmi, /.*createdBy.*/gmi],
+    excludeKeys: [/.*password.*/gmi, /.*token.*/gmi, /.*plubished.*/gmi, /.*documentId.*/gmi, /.*provider.*/gmi, /.*updatedBy.*/gmi, /.*createdBy.*/gmi],
     expandArrayObjects: true,
     expandNestedObjects: true
   })
@@ -122,5 +122,6 @@ const exportRelationsAsId = (entries, options) => {
 const convertToCsvWithBeforeConvert = withBeforeConvert(convertToCsv);
 
 export {
-  convertToCsvWithBeforeConvert as convertToCsv,
+  convertToCsvWithBeforeConvert as convertToCsv
 };
+

@@ -11,11 +11,12 @@ const bodySchema = Joi.object({
   relationsAsId: Joi.boolean().default(false),
   deepness: Joi.number().integer().min(1).max(2).default(2),
   exportPluginsContentTypes: Joi.boolean().default(false),
+  locale: Joi.string().optional(),
 });
 
 const exportData = async (ctx) => {
-  let { slug, search, applySearch, exportFormat, relationsAsId, deepness } = checkParams(bodySchema, ctx.request.body);
-  const data = await getService('export').exportData({ slug, search, applySearch, exportFormat, relationsAsId, deepness });
+  let { slug, search, applySearch, exportFormat, relationsAsId, deepness, locale } = checkParams(bodySchema, ctx.request.body);
+  const data = await getService('export').exportData({ slug, search, applySearch, exportFormat, relationsAsId, deepness, locale });
   ctx.body = {
     data,
   };
